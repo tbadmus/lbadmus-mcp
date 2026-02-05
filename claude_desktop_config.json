@@ -23,6 +23,14 @@
     "gemini": {
       "command": "npx",
       "args": ["-y", "mcp-remote", "http://localhost:8005/mcp"]
+    },
+    "browserbase": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://localhost:8006/mcp"]
+    },
+    "excel": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://localhost:8007/sse"]
     }
   }
 }
