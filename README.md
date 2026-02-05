@@ -14,6 +14,7 @@ All MCP server images are available on Docker Hub:
 | `elbeeng/mcp-openai` | OpenAI GPT models | `docker pull elbeeng/mcp-openai:latest` |
 | `elbeeng/mcp-gemini` | Google Gemini models | `docker pull elbeeng/mcp-gemini:latest` |
 | `elbeeng/browserbase-mcp-server` | Browserbase browser automation | `docker pull elbeeng/browserbase-mcp-server:latest` |
+| `elbeeng/excel-mcp-server` | Excel spreadsheet manipulation | `docker pull elbeeng/excel-mcp-server:latest` |
 
 ## Available MCP Servers
 
@@ -26,6 +27,7 @@ All MCP server images are available on Docker Hub:
 | openai-mcp-server | 8004 | HTTP | http://localhost:8004/mcp |
 | gemini-mcp-server | 8005 | HTTP | http://localhost:8005/mcp |
 | browserbase-mcp-server | 8006 | HTTP | http://localhost:8006/mcp |
+| excel-mcp-server | 8007 | SSE | http://localhost:8007/sse |
 
 ## Quick Start (Using Pre-built Images)
 
@@ -38,6 +40,7 @@ All MCP server images are available on Docker Hub:
    docker pull elbeeng/mcp-openai:latest
    docker pull elbeeng/mcp-gemini:latest
    docker pull elbeeng/browserbase-mcp-server:latest
+   docker pull elbeeng/excel-mcp-server:latest
    ```
 
 2. Create a `.env` file with your credentials:
@@ -108,6 +111,13 @@ docker run -d --name mcp-browserbase -p 8006:8006 \
   -e GEMINI_API_KEY="$GEMINI_API_KEY" \
   -e PORT=8006 \
   elbeeng/browserbase-mcp-server:latest
+
+# Excel MCP
+docker run -d --name mcp-excel -p 8007:8007 \
+  -e PORT=8007 \
+  -e EXCEL_MCP_PAGING_CELLS_LIMIT=4000 \
+  -v ~/Desktop/excel-files:/excel-files \
+  elbeeng/excel-mcp-server:latest
 ```
 
 ## Setup (Build from Source)
@@ -179,6 +189,10 @@ Claude Desktop requires `mcp-remote` to connect to HTTP-based MCP servers. Add t
     "browserbase": {
       "command": "npx",
       "args": ["-y", "mcp-remote", "http://localhost:8006/mcp"]
+    },
+    "excel": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://localhost:8007/sse"]
     }
   }
 }
@@ -214,6 +228,10 @@ Claude Code CLI supports direct HTTP connections. Create `.mcp.json` in your pro
     "browserbase": {
       "url": "http://localhost:8006/mcp",
       "transport": "http"
+    },
+    "excel": {
+      "url": "http://localhost:8007/sse",
+      "transport": "sse"
     }
   }
 }
@@ -270,6 +288,9 @@ curl -X POST http://localhost:8006/mcp \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}'
+
+# Test Excel SSE
+curl http://localhost:8007/sse -H "Accept: text/event-stream"
 ```
 
 ## Prerequisites
@@ -303,6 +324,11 @@ curl -X POST http://localhost:8006/mcp \
 │ Claude Code CLI │─────┼──│ mcp-gemini  │  │mcp-browserbase│     │
 │ (Direct HTTP)   │     │  │   :8005     │  │   :8006     │       │
 └─────────────────┘     │  └─────────────┘  └─────────────┘       │
+                        │                                          │
+                        │  ┌─────────────┐                         │
+                        │  │  mcp-excel  │                         │
+                        │  │   :8007     │                         │
+                        │  └─────────────┘                         │
                         └──────────────────────────────────────────┘
 ```
 
