@@ -84,6 +84,36 @@ services:
     networks:
       - mcp-network
 
+  # Browserbase MCP Server
+  browserbase-mcp-server:
+    image: elbeeng/browserbase-mcp-server:latest
+    container_name: browserbase-mcp-server
+    ports:
+      - "8006:8006"
+    environment:
+      - BROWSERBASE_API_KEY=${BROWSERBASE_API_KEY}
+      - BROWSERBASE_PROJECT_ID=${BROWSERBASE_PROJECT_ID}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - PORT=8006
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+  # Excel MCP Server
+  excel-mcp-server:
+    image: elbeeng/excel-mcp-server:latest
+    container_name: excel-mcp-server
+    ports:
+      - "8007:8007"
+    environment:
+      - PORT=8007
+      - EXCEL_MCP_PAGING_CELLS_LIMIT=4000
+    volumes:
+      - ~/Desktop/excel-files:/excel-files
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
 networks:
   mcp-network:
     driver: bridge
