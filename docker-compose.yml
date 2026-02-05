@@ -114,6 +114,23 @@ services:
     networks:
       - mcp-network
 
+  # Excel MCP Server
+  excel-mcp-server:
+    build:
+      context: ../excel-mcp-server
+      dockerfile: Dockerfile.mcp
+    container_name: excel-mcp-server
+    ports:
+      - "8007:8007"
+    environment:
+      - PORT=8007
+      - EXCEL_MCP_PAGING_CELLS_LIMIT=4000
+    volumes:
+      - ~/Desktop/excel-files:/excel-files
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
 networks:
   mcp-network:
     driver: bridge
