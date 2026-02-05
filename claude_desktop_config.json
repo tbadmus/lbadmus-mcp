@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "atlassian-sse": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://localhost:8000/sse"]
+    },
+    "atlassian-http": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://localhost:8001/mcp"]
+    },
+    "aws": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://localhost:8002/sse"]
+    },
+    "terraform": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://localhost:8003/mcp"]
+    },
+    "openai": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://localhost:8004/mcp"]
+    },
+    "gemini": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "http://localhost:8005/mcp"]
+    }
+  }
+}

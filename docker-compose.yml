@@ -1,0 +1,119 @@
+services:
+  # Atlassian MCP Server - SSE Transport
+  mcp-atlassian-sse:
+    build:
+      context: ../mcp-atlassian
+      dockerfile: Dockerfile
+    container_name: mcp-atlassian-sse
+    ports:
+      - "8000:8000"
+    environment:
+      - JIRA_URL=${JIRA_URL}
+      - JIRA_USERNAME=${JIRA_USERNAME}
+      - JIRA_API_TOKEN=${JIRA_API_TOKEN}
+      - TRANSPORT=sse
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+  # Atlassian MCP Server - Streamable HTTP Transport
+  mcp-atlassian-http:
+    build:
+      context: ../mcp-atlassian
+      dockerfile: Dockerfile
+    container_name: mcp-atlassian-http
+    ports:
+      - "8001:8001"
+    environment:
+      - JIRA_URL=${JIRA_URL}
+      - JIRA_USERNAME=${JIRA_USERNAME}
+      - JIRA_API_TOKEN=${JIRA_API_TOKEN}
+      - TRANSPORT=streamable-http
+      - PORT=8001
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+  # AWS MCP Server
+  aws-mcp-server:
+    build:
+      context: ../aws-mcp-server
+      dockerfile: deploy/docker/Dockerfile
+    container_name: aws-mcp-server
+    ports:
+      - "8002:8000"
+    environment:
+      - AWS_MCP_TRANSPORT=sse
+    volumes:
+      - ~/.aws:/home/appuser/.aws:ro
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+  # Terraform MCP Server (HashiCorp Official)
+  terraform-mcp-server:
+    build:
+      context: ../terraform-mcp-server
+      dockerfile: Dockerfile
+      target: dev
+    container_name: terraform-mcp-server
+    ports:
+      - "8003:8080"
+    environment:
+      - TRANSPORT_MODE=streamable-http
+      - TRANSPORT_HOST=0.0.0.0
+      - TRANSPORT_PORT=8080
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+  # OpenAI MCP Server
+  openai-mcp-server:
+    build:
+      context: ../mcp-server-openai
+      dockerfile: Dockerfile
+    container_name: openai-mcp-server
+    ports:
+      - "8004:8004"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PORT=8004
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+  # Gemini MCP Server
+  gemini-mcp-server:
+    build:
+      context: ../mcp-server-gemini
+      dockerfile: Dockerfile
+    container_name: gemini-mcp-server
+    ports:
+      - "8005:8005"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - PORT=8005
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+  # Browserbase MCP Server
+  browserbase-mcp-server:
+    build:
+      context: ../mcp-server-browserbase
+      dockerfile: Dockerfile
+    container_name: browserbase-mcp-server
+    ports:
+      - "8006:8006"
+    environment:
+      - BROWSERBASE_API_KEY=${BROWSERBASE_API_KEY}
+      - BROWSERBASE_PROJECT_ID=${BROWSERBASE_PROJECT_ID}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - PORT=8006
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+networks:
+  mcp-network:
+    driver: bridge
